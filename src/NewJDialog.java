@@ -56,6 +56,8 @@ public class NewJDialog extends javax.swing.JDialog {
         setLocation(p, 0);
         price.setOpaque(true);
         change.setOpaque(true);
+        offline_mode.setVisible(false);
+        connect_to_net.setVisible(false);
 
         fetchData();
 
@@ -72,15 +74,28 @@ public class NewJDialog extends javax.swing.JDialog {
     private void initComponents() {
 
         jPopupMenu1 = new javax.swing.JPopupMenu();
+        jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem4 = new javax.swing.JMenuItem();
+        jMenuItem6 = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
+        jSlider1 = new javax.swing.JSlider();
+        offline_mode = new javax.swing.JLabel();
+        connect_to_net = new javax.swing.JLabel();
         headerImage = new javax.swing.JLabel();
         price = new javax.swing.JLabel();
         change = new javax.swing.JLabel();
         graph = new javax.swing.JLabel();
+
+        jMenuItem5.setText("Update");
+        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem5ActionPerformed(evt);
+            }
+        });
+        jPopupMenu1.add(jMenuItem5);
 
         jMenuItem4.setText("Next");
         jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
@@ -89,6 +104,14 @@ public class NewJDialog extends javax.swing.JDialog {
             }
         });
         jPopupMenu1.add(jMenuItem4);
+
+        jMenuItem6.setText("Previous");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
+        jPopupMenu1.add(jMenuItem6);
         jPopupMenu1.add(jSeparator1);
 
         jMenuItem3.setText("Unpin");
@@ -133,6 +156,28 @@ public class NewJDialog extends javax.swing.JDialog {
         });
         getContentPane().setLayout(null);
 
+        offline_mode.setFont(new java.awt.Font("Kartika", 1, 10)); // NOI18N
+        offline_mode.setForeground(new java.awt.Color(162, 162, 162));
+        offline_mode.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        offline_mode.setText("OFFLINE MODE");
+        offline_mode.setToolTipText("");
+        offline_mode.setMaximumSize(new java.awt.Dimension(200, 20));
+        offline_mode.setMinimumSize(new java.awt.Dimension(200, 20));
+        offline_mode.setPreferredSize(new java.awt.Dimension(200, 20));
+        offline_mode.setRequestFocusEnabled(false);
+        getContentPane().add(offline_mode);
+        offline_mode.setBounds(0, 130, 100, 20);
+
+        connect_to_net.setFont(new java.awt.Font("Kartika", 1, 8)); // NOI18N
+        connect_to_net.setForeground(new java.awt.Color(162, 162, 162));
+        connect_to_net.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        connect_to_net.setText("CONNECT TO INTERNET");
+        connect_to_net.setMaximumSize(new java.awt.Dimension(103, 20));
+        connect_to_net.setMinimumSize(new java.awt.Dimension(103, 20));
+        connect_to_net.setPreferredSize(new java.awt.Dimension(103, 20));
+        getContentPane().add(connect_to_net);
+        connect_to_net.setBounds(0, 140, 103, 20);
+
         headerImage.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bitcoin-l.png"))); // NOI18N
         headerImage.setVerifyInputWhenFocusTarget(false);
         headerImage.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -149,7 +194,7 @@ public class NewJDialog extends javax.swing.JDialog {
             }
         });
         getContentPane().add(headerImage);
-        headerImage.setBounds(0, 0, 200, 201);
+        headerImage.setBounds(0, 0, 200, 200);
 
         price.setFont(new java.awt.Font("Iranian Sans", 0, 14)); // NOI18N
         price.setForeground(new java.awt.Color(77, 77, 77));
@@ -240,6 +285,8 @@ public class NewJDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        offline_mode.setVisible(false);
+        connect_to_net.setVisible(false);
         selectedCurrencyIndex++;
         if (selectedCurrencyIndex >= currencyName.length) {
             selectedCurrencyIndex = 0;
@@ -256,8 +303,39 @@ public class NewJDialog extends javax.swing.JDialog {
             fetchData();
             loopBreaked = false;
         }
-
     }//GEN-LAST:event_jMenuItem4ActionPerformed
+
+    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
+        offline_mode.setVisible(false);
+        connect_to_net.setVisible(false);
+        if (!loopBreaked) {
+            thread.interrupt();
+        } else {
+            fetchData();
+            loopBreaked = false;
+        }
+    }//GEN-LAST:event_jMenuItem5ActionPerformed
+
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        offline_mode.setVisible(false);
+        connect_to_net.setVisible(false);
+        selectedCurrencyIndex--;
+        if (selectedCurrencyIndex >= currencyName.length) {
+            selectedCurrencyIndex = 0;
+        }
+        justStarted = true;
+        price.setText("");
+        change.setText("");
+        graph.setIcon(null);
+        setTheme(theme);
+
+        if (!loopBreaked) {
+            thread.interrupt();
+        } else {
+            fetchData();
+            loopBreaked = false;
+        }
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -313,9 +391,16 @@ public class NewJDialog extends javax.swing.JDialog {
                 while (true) {
                     if (!networkAccess()) {
                         System.out.println("There is no network access!");
+                        //make offlin mode visible
+                        offline_mode.setVisible(true);
+                        connect_to_net.setVisible(true);
                         fetchDataOffline();
                         loopBreaked = true;
                         break;
+                    } else {
+                        //make offlin mode invisible
+                        offline_mode.setVisible(false);
+                        connect_to_net.setVisible(false);
                     }
                     c++;
                     try {
@@ -359,13 +444,13 @@ public class NewJDialog extends javax.swing.JDialog {
 
     private void fetchDataOffline() {
         Currency currency = readObjectFromFile(currencyName[selectedCurrencyIndex]);
-        price.setText(currency.getPrice() + " ریال");
+        if (currency.getName().equals("dollar") || currency.getName().equals("euro")) {
+            price.setText(currency.getPrice() + " ریال");
+        } else {
+            price.setText(currency.getPrice());
+        }
         change.setText(currency.getChange());
 
-        //TODO 
-        //add a "Refresh" button to right click menu to call the fetchData method and update the content if there is network
-        //add an "Offline" lable for widget to indicate that the content is not up to date
-       
         //set graph image
         if (!currencyName[selectedCurrencyIndex].equals("dollar")
                 && !currencyName[selectedCurrencyIndex].equals("euro")) {
@@ -460,14 +545,19 @@ public class NewJDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel change;
+    private javax.swing.JLabel connect_to_net;
     private javax.swing.JLabel graph;
     private javax.swing.JLabel headerImage;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JSlider jSlider1;
+    private javax.swing.JLabel offline_mode;
     private javax.swing.JLabel price;
     // End of variables declaration//GEN-END:variables
 
